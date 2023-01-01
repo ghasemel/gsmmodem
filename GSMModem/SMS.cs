@@ -23,7 +23,7 @@ namespace GSMModem
         public SMS(Connection connection)
         {
             mCon = connection;
-            mCon.Open();            
+            mCon.Open();                       
             mCon.DataReceived += MCon_DataReceived;
             mCon.SendCommand("AT");
             
@@ -87,7 +87,8 @@ AT+CMGS="09111006700"
 
         public void SendPDU(string mobile, string message)
         {
-            //EnablePDUMode();
+            mCon.FlushPort();
+            EnablePDUMode();
 
             string encoded;
 
@@ -96,8 +97,8 @@ AT+CMGS="09111006700"
             // single sms
             if (message.Length <= MAX_SINGLE_LEN)
             {
-                encoded = "11000C81" + mobile.SwapChar2By2() + "00000B0" + (message.Length / 2).ToString("X") + message;
-                sendPDUMessage(encoded);
+                encoded = "31000" + GetMobileFormat(mobile) + mobile.SwapChar2By2() + "0008AA" + (message.Length / 2).ToString("X") + message;
+                sendPDUMessage(encoded);                
             }
             else
             {
@@ -111,7 +112,7 @@ AT+CMGS="09111006700"
                 int part_index = 1;
 
                 Random random = new Random();
-                string uniq_send = random.Next(0, 255).ToString("X").PadLeft(2, '0');
+                string uniq_send = "00"; // random.Next(0, 255).ToString("X").PadLeft(2, '0');
 
                 do
                 {
@@ -124,13 +125,13 @@ AT+CMGS="09111006700"
                     message = message.Remove(0, part_len);
 
                     
-                    string UDH = "00" + "03" + uniq_send + part_count.ToString("X").PadLeft(2, '0') + part_index.ToString("X").PadLeft(2, '0');
+                    string UDH = "0003" + uniq_send + part_count.ToString("X").PadLeft(2, '0') + part_index.ToString("X").PadLeft(2, '0');
                     int UDHL = UDH.Length / 2;
 
                     int UDL = 1 + UDHL + part.Length / 2;
 
                     string pdu_part = UDL.ToString("X").PadLeft(2, '0') + UDHL.ToString("X").PadLeft(2, '0') + UDH + part;
-                    encoded = "61" + part_index.ToString("X").PadLeft(2, '0') + "0B91" + mobile.SwapChar2By2() + "0008" + pdu_part;
+                    encoded = "51000" + GetMobileFormat(mobile) + mobile.SwapChar2By2() + "00080B" + pdu_part;
 
                     // send msg
                     sendPDUMessage(encoded);
@@ -142,7 +143,14 @@ AT+CMGS="09111006700"
             
         }
 
-
+        private string GetMobileFormat(string mobile)
+        {
+            // 8: local format
+            // 9: internatioanl format         
+            
+            return mobile.Length.ToString("X") + (mobile.StartsWith("98") ? "9" : "8") + "1"; 
+            
+        }
 
         private void sendPDUMessage(string encoded)
         {
@@ -153,7 +161,7 @@ AT+CMGS="09111006700"
             Debug.WriteLine(encoded);
 
             mCon.SendCommand(encoded + '\x1A');
-            Thread.Sleep(8000);
+            Thread.Sleep(5000);
         }
 
 
@@ -254,9 +262,13 @@ AT+CMGS="09111006700"
         }
 
 
-
+        /// <summary>
+        /// This function only supports unicode characters, for ASCII it generates a wrong message
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static string ConvertStringToHEX(string message)
-        {
+        {            
             UnicodeEncoding uni = new UnicodeEncoding();
             Byte[] encodedBytes = uni.GetBytes(message);
             string text = "";

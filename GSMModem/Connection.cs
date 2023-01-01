@@ -9,13 +9,12 @@ namespace GSMModem
 {
     public class Connection : IDisposable
     {
+        private const int TIMEOUT = 10000;
 
         public static string[] GetPortName()
         {
             return SerialPort.GetPortNames();
-        }
-
-
+        }        
 
 
         public delegate void GSMDataReceivedEventHandler(string receivedData);
@@ -27,11 +26,25 @@ namespace GSMModem
 
         public Connection(string portName)
         {
-            port = new SerialPort(portName, 9600, Parity.None, 8, StopBits.One);
-            port.ReadTimeout = 300;
-            port.WriteTimeout = 300;
-            port.Encoding = Encoding.GetEncoding("utf-8");
-            port.DataReceived += Port_DataReceived;
+            port = new SerialPort();
+            //port.ReadTimeout = 300;
+            //port.WriteTimeout = 300;
+            //port.Encoding = Encoding.GetEncoding("utf-8");
+            //port.DataReceived += Port_DataReceived;
+            //port.DtrEnable = true;
+            //port.Handshake = Handshake.None;
+            //port.NewLine = "\r\n";
+            //port.WriteBufferSize = 1024;
+
+            port.NewLine = "\r\n";
+            port.BaudRate = 9600;
+            port.Parity = Parity.None;
+            port.DataBits = 8;
+            port.StopBits = StopBits.One;
+            port.Handshake = Handshake.None;
+            port.DtrEnable = true;
+            port.WriteBufferSize = 1024;
+            port.PortName = portName;
         }
 
         public void Dispose()
@@ -50,6 +63,22 @@ namespace GSMModem
             }
         }
 
+        private string readPort(int timeout)
+        {
+            string result;
+            while (!((result = port.ReadExisting()).Contains("OK")) && timeout > 0)
+            {
+                timeout--;
+            }
+
+            return result;
+        }
+
+        public void FlushPort()
+        {
+            port.BaseStream.Flush();
+        }
+
         public void Open()
         {
             try
@@ -57,8 +86,7 @@ namespace GSMModem
                 if (!this.port.IsOpen)
                 {
                     this.port.Open();
-                    this.port.DtrEnable = true;
-                    this.port.RtsEnable = true;
+
                 }
             }
             catch (UnauthorizedAccessException un)
@@ -85,9 +113,24 @@ namespace GSMModem
         }
 
 
-        public void SendCommand(string value)
+        public string SendCommand(string value)
         {
+            if (DataReceived != null)
+                DataReceived("Command: " + value);
+
             this.port.WriteLine(value);
+            System.Threading.Thread.Sleep(1000);
+
+
+            var result = readPort(TIMEOUT);
+            if (DataReceived != null)
+                DataReceived("Response: " + result);
+
+           
+            return result;
+
         }
+
+    
     }
 }

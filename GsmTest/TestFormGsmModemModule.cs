@@ -10,7 +10,6 @@ using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static GSMModem.Connection;
 
 namespace GsmTest
 {
@@ -30,16 +29,14 @@ namespace GsmTest
 
             try
             {
-                //conn.DataReceived += dataReceiver;
 
-                //sms.SendResponseReceived += smsSendEvent;
-                SMS sms = new SMS();
+                //SMS sms = new SMS();
 
-                    if (rdPDU.Checked)
-                        sms.SendPDU(txtbxMobile.Text, txtbxMessage.Text);
-                    else
-                        sms.SendText(txtbxMobile.Text, txtbxMessage.Text);
-                
+                if (rdPDU.Checked)
+                    sms.SendPDU(txtbxMobile.Text, txtbxMessage.Text);
+                else
+                    sms.SendText(txtbxMobile.Text, txtbxMessage.Text);
+
 
             }
             catch (Exception ex)
@@ -55,7 +52,14 @@ namespace GsmTest
 
         private void dataReceiver(string receivedData)
         {
-            txtResult.Text += "receivedData: " + receivedData + "\r\n";
+            if (txtResult.InvokeRequired)
+            {
+                // Call this same method 
+                Action safeWrite = delegate { dataReceiver("receivedData: " + receivedData + "\r\n"); };
+                txtResult.Invoke(safeWrite);
+            }
+            else
+                txtResult.Text += "receivedData: " + receivedData + "\r\n";        
         }
 
         private void btnPort_Click(object sender, EventArgs e)
@@ -134,6 +138,9 @@ namespace GsmTest
         {
             conn = new GSMModem.Connection(getPort());
             sms = new GSMModem.SMS(conn);
+
+            conn.DataReceived += dataReceiver;
+            sms.SendResponseReceived += smsSendEvent;
         }
 
         private void btnSendCommand_Click(object sender, EventArgs e)
@@ -149,6 +156,12 @@ namespace GsmTest
         private void btnConvert_Click(object sender, EventArgs e)
         {
             txtResult.Text += SMS.ConvertStringToHEX(txtbxMessage.Text);
+        }
+
+        private void btnForm1_Click(object sender, EventArgs e)
+        {
+            TestForm form1 = new TestForm();
+            form1.ShowDialog();
         }
     }
 }

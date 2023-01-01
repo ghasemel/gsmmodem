@@ -46,6 +46,7 @@ namespace GsmTest
             this.label4 = new System.Windows.Forms.Label();
             this.btnDisconnect = new System.Windows.Forms.Button();
             this.btnConvert = new System.Windows.Forms.Button();
+            this.btnForm1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label3
@@ -221,11 +222,23 @@ namespace GsmTest
             this.btnConvert.UseVisualStyleBackColor = true;
             this.btnConvert.Click += new System.EventHandler(this.btnConvert_Click);
             // 
+            // btnForm1
+            // 
+            this.btnForm1.Location = new System.Drawing.Point(8, 299);
+            this.btnForm1.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
+            this.btnForm1.Name = "btnForm1";
+            this.btnForm1.Size = new System.Drawing.Size(96, 46);
+            this.btnForm1.TabIndex = 25;
+            this.btnForm1.Text = "Form 1";
+            this.btnForm1.UseVisualStyleBackColor = true;
+            this.btnForm1.Click += new System.EventHandler(this.btnForm1_Click);
+            // 
             // TestFormGsmModemModule
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(686, 570);
+            this.Controls.Add(this.btnForm1);
             this.Controls.Add(this.btnConvert);
             this.Controls.Add(this.btnDisconnect);
             this.Controls.Add(this.label4);
@@ -272,6 +285,7 @@ namespace GsmTest
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnDisconnect;
         private System.Windows.Forms.Button btnConvert;
+        private System.Windows.Forms.Button btnForm1;
     }
 }
 
