@@ -29,15 +29,17 @@ namespace GsmTest
 
             try
             {
+                if (txtbxPrefix.Text == "")
+                {
+                    MessageBox.Show("Prefix cannot be empty!");
+                    return;
+                }
 
-                //SMS sms = new SMS();
 
                 if (rdPDU.Checked)
-                    sms.SendPDU(txtbxMobile.Text, txtbxMessage.Text);
+                    sms.SendPDU(txtbxMobile.Text, txtbxMessage.Text, txtbxPrefix.Text);
                 else
                     sms.SendText(txtbxMobile.Text, txtbxMessage.Text);
-
-
             }
             catch (Exception ex)
             {

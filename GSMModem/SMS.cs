@@ -85,7 +85,7 @@ AT+CMGS="09111006700"
 
         private const int MAX_SINGLE_LEN = 268;
 
-        public void SendPDU(string mobile, string message)
+        public void SendPDU(string mobile, string message, string prefix)
         {
             mCon.FlushPort();
             EnablePDUMode();
@@ -97,7 +97,7 @@ AT+CMGS="09111006700"
             // single sms
             if (message.Length <= MAX_SINGLE_LEN)
             {
-                encoded = "31000" + GetMobileFormat(mobile) + mobile.SwapChar2By2() + "0008AA" + (message.Length / 2).ToString("X") + message;
+                encoded = "31000" + GetMobileFormat(mobile, prefix) + mobile.SwapChar2By2() + "0008AA" + (message.Length / 2).ToString("X") + message;
                 sendPDUMessage(encoded);                
             }
             else
@@ -131,7 +131,7 @@ AT+CMGS="09111006700"
                     int UDL = 1 + UDHL + part.Length / 2;
 
                     string pdu_part = UDL.ToString("X").PadLeft(2, '0') + UDHL.ToString("X").PadLeft(2, '0') + UDH + part;
-                    encoded = "51000" + GetMobileFormat(mobile) + mobile.SwapChar2By2() + "00080B" + pdu_part;
+                    encoded = "51000" + GetMobileFormat(mobile, prefix) + mobile.SwapChar2By2() + "00080B" + pdu_part;
 
                     // send msg
                     sendPDUMessage(encoded);
@@ -143,12 +143,12 @@ AT+CMGS="09111006700"
             
         }
 
-        private string GetMobileFormat(string mobile)
+        private string GetMobileFormat(string mobile, string prefix)
         {
             // 8: local format
             // 9: internatioanl format         
             
-            return mobile.Length.ToString("X") + (mobile.StartsWith("98") ? "9" : "8") + "1"; 
+            return mobile.Length.ToString("X") + (mobile.StartsWith(prefix) ? "9" : "8") + "1"; 
             
         }
 

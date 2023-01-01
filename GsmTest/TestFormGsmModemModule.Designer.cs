@@ -47,6 +47,8 @@ namespace GsmTest
             this.btnDisconnect = new System.Windows.Forms.Button();
             this.btnConvert = new System.Windows.Forms.Button();
             this.btnForm1 = new System.Windows.Forms.Button();
+            this.txtbxPrefix = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label3
@@ -233,11 +235,31 @@ namespace GsmTest
             this.btnForm1.UseVisualStyleBackColor = true;
             this.btnForm1.Click += new System.EventHandler(this.btnForm1_Click);
             // 
+            // txtbxPrefix
+            // 
+            this.txtbxPrefix.Location = new System.Drawing.Point(184, 14);
+            this.txtbxPrefix.Margin = new System.Windows.Forms.Padding(8, 6, 8, 6);
+            this.txtbxPrefix.Name = "txtbxPrefix";
+            this.txtbxPrefix.Size = new System.Drawing.Size(62, 26);
+            this.txtbxPrefix.TabIndex = 26;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(70, 16);
+            this.label5.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(111, 20);
+            this.label5.TabIndex = 27;
+            this.label5.Text = "Country Prefix:";
+            // 
             // TestFormGsmModemModule
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(686, 570);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.txtbxPrefix);
             this.Controls.Add(this.btnForm1);
             this.Controls.Add(this.btnConvert);
             this.Controls.Add(this.btnDisconnect);
@@ -286,6 +308,8 @@ namespace GsmTest
         private System.Windows.Forms.Button btnDisconnect;
         private System.Windows.Forms.Button btnConvert;
         private System.Windows.Forms.Button btnForm1;
+        private System.Windows.Forms.TextBox txtbxPrefix;
+        private System.Windows.Forms.Label label5;
     }
 }
 
